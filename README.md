@@ -20,8 +20,6 @@ The project follows a clean architecture with three core layers:
 - **Domain Layer**: Business logic, entities, and repository interfaces.
 - **Data Layer**: In-memory data source and repository implementation.
 
-
-
 ## 📂 Project Structure
 
 ```bash
@@ -36,3 +34,5 @@ lib/
 │           ├── widgets/
 │           └── providers/
 └── main.dart
+```
+
