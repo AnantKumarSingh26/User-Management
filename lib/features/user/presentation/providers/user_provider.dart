@@ -1,33 +1,31 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:user_management/features/user/data/user_repository.dart';
+import '../../domain/entities/user.dart';
+import '../../data/user_repository.dart';
 
-final userProvider = StateNotifierProvider<UserNotifier, List<Map<String, dynamic>>>((ref) {
+final userProvider = StateNotifierProvider<UserNotifier, List<User>>((ref) {
   return UserNotifier(UserRepository());
 });
 
-class UserNotifier extends StateNotifier<List<Map<String, dynamic>>> {
+class UserNotifier extends StateNotifier<List<User>> {
   final UserRepository _repository;
 
-  UserNotifier(this._repository) : super([]) {
-    _loadUsers();
-  }
+  UserNotifier(this._repository) : super([]);
 
-  Future<void> _loadUsers() async {
+  Future<void> loadUsers() async {
     state = await _repository.getUsers();
   }
 
-  Future<void> addUser(Map<String, dynamic> user) async {
-    await _repository.addUser(user);
-    _loadUsers();
+  Future<User?> getUserById(int id) async {
+    return state.firstWhere((user) => user.id == id, orElse: () => null);
   }
 
-  Future<void> updateUser(int id, Map<String, dynamic> user) async {
-    await _repository.updateUser(id, user);
-    _loadUsers();
+  Future<void> updateUser(User updatedUser) async {
+    await _repository.updateUser(updatedUser);
+    state = state.map((user) => user.id == updatedUser.id ? updatedUser : user).toList();
   }
 
   Future<void> deleteUser(int id) async {
     await _repository.deleteUser(id);
-    _loadUsers();
+    state = state.where((user) => user.id != id).toList();
   }
 }

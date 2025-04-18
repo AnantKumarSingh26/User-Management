@@ -39,6 +39,13 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                       setState(() {
                         _searchedUser = user;
                       });
+                    } else {
+                      setState(() {
+                        _searchedUser = null;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Invalid User ID')),
+                      );
                     }
                   },
                 ),
@@ -52,6 +59,11 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                 title: Text(_searchedUser!.name),
                 subtitle: Text('Age: ${_searchedUser!.age}'),
               ),
+            )
+          else if (_searchController.text.isNotEmpty)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text('No user found with the given ID.'),
             ),
           Expanded(
             child: RefreshIndicator(
@@ -77,7 +89,12 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
-                          onPressed: () => ref.read(userProvider.notifier).deleteUser(user.id),
+                          onPressed: () async {
+                            await ref.read(userProvider.notifier).deleteUser(user.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('User deleted successfully')),
+                            );
+                          },
                         ),
                       ],
                     ),

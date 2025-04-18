@@ -1,22 +1,22 @@
 class User {
-  final String id;
+  final int id;
   final String name;
   final String email;
-  final int age;
+  final int? age;
 
   User({
     required this.id,
     required this.name,
     required this.email,
-    required this.age,
+    this.age,
   });
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      id: map['id'] ?? '',
+      id: map['id'] ?? 0,
       name: map['name'] ?? '',
       email: map['email'] ?? '',
-      age: map['age'] ?? 0,
+      age: map['age'],
     );
   }
 
@@ -27,5 +27,14 @@ class User {
       'email': email,
       'age': age,
     };
+  }
+
+  User copyWith({String? name, String? email, int? age}) {
+    return User(
+      id: id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      age: age ?? this.age,
+    );
   }
 }

@@ -20,7 +20,7 @@ class _UpdateUserFormState extends ConsumerState<UpdateUserForm> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.user.name);
-    _ageController = TextEditingController(text: widget.user.age.toString());
+    _ageController = TextEditingController(text: widget.user.age?.toString() ?? '');
   }
 
   @override
@@ -30,8 +30,15 @@ class _UpdateUserFormState extends ConsumerState<UpdateUserForm> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Name')),
-          TextField(controller: _ageController, decoration: const InputDecoration(labelText: 'Age'), keyboardType: TextInputType.number),
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(labelText: 'Name'),
+          ),
+          TextField(
+            controller: _ageController,
+            decoration: const InputDecoration(labelText: 'Age'),
+            keyboardType: TextInputType.number,
+          ),
         ],
       ),
       actions: [
@@ -43,12 +50,19 @@ class _UpdateUserFormState extends ConsumerState<UpdateUserForm> {
               email: widget.user.email, // Keep the email unchanged
               age: int.tryParse(_ageController.text) ?? widget.user.age,
             );
-            ref.read(usersProvider.notifier).updateUser(updatedUser);
+            ref.read(userProvider.notifier).updateUser(updatedUser);
             Navigator.pop(context);
           },
           child: const Text('Update'),
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _ageController.dispose();
+    super.dispose();
   }
 }
