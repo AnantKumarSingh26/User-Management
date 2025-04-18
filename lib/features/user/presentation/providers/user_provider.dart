@@ -1,37 +1,33 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/user_repository_impl.dart';
-import '../../domain/entities/user.dart';
+import 'package:user_management/features/user/data/user_repository.dart';
 
-final userRepositoryProvider = Provider((ref) => UserRepositoryImpl());
-
-final usersProvider = StateNotifierProvider<UserNotifier, List<User>>((ref) {
-  final repo = ref.watch(userRepositoryProvider);
-  return UserNotifier(repo);
+final userProvider = StateNotifierProvider<UserNotifier, List<Map<String, dynamic>>>((ref) {
+  return UserNotifier(UserRepository());
 });
 
-class UserNotifier extends StateNotifier<List<User>> {
-  final UserRepositoryImpl repo;
+class UserNotifier extends StateNotifier<List<Map<String, dynamic>>> {
+  final UserRepository _repository;
 
-  UserNotifier(this.repo) : super([]) {
-    loadUsers();
+  UserNotifier(this._repository) : super([]) {
+    _loadUsers();
   }
 
-  Future<void> loadUsers() async {
-    state = await repo.getUsers();
+  Future<void> _loadUsers() async {
+    state = await _repository.getUsers();
   }
 
-  Future<void> addUser(User user) async {
-    await repo.addUser(user);
-    await loadUsers();
+  Future<void> addUser(Map<String, dynamic> user) async {
+    await _repository.addUser(user);
+    _loadUsers();
   }
 
-  Future<void> updateUser(User user) async {
-    await repo.updateUser(user);
-    await loadUsers();
+  Future<void> updateUser(int id, Map<String, dynamic> user) async {
+    await _repository.updateUser(id, user);
+    _loadUsers();
   }
 
-  Future<void> deleteUser(String id) async {
-    await repo.deleteUser(id);
-    await loadUsers();
+  Future<void> deleteUser(int id) async {
+    await _repository.deleteUser(id);
+    _loadUsers();
   }
 }

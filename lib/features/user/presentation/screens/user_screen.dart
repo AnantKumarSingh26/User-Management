@@ -18,7 +18,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final users = ref.watch(usersProvider);
+    final users = ref.watch(userProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('User Management')),
@@ -33,10 +33,13 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: () async {
-                    final user = await ref.read(usersProvider.notifier).repo.getUserById(_searchController.text);
-                    setState(() {
-                      _searchedUser = user;
-                    });
+                    final userId = int.tryParse(_searchController.text);
+                    if (userId != null) {
+                      final user = await ref.read(userProvider.notifier).getUserById(userId);
+                      setState(() {
+                        _searchedUser = user;
+                      });
+                    }
                   },
                 ),
               ),
@@ -53,7 +56,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
-                ref.read(usersProvider.notifier).loadUsers();
+                await ref.read(userProvider.notifier).loadUsers();
               },
               child: ListView.builder(
                 itemCount: users.length,
@@ -74,7 +77,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
-                          onPressed: () => ref.read(usersProvider.notifier).deleteUser(user.id),
+                          onPressed: () => ref.read(userProvider.notifier).deleteUser(user.id),
                         ),
                       ],
                     ),
